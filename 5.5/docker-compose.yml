@@ -1,0 +1,124 @@
+{
+    "version": "2",
+    "volumes": {
+        "mongo_data": {},
+        "pg_data": {}
+    },
+    "networks": {
+        "loc": {}
+    },
+    "services": {
+        "loc_postgres": {
+            "container_name": "loc_postgres",
+            "image": "postgres:9.4-alpine",
+            "environment": {
+                "POSTGRES_USER": "postgres",
+                "POSTGRES_DB": "postgres"
+            },
+            "volumes": [
+                "pg_data:/var/lib/postgresql/data"
+            ],
+            "ports": [
+                "5432:5432"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_mongo": {
+            "container_name": "loc_mongo",
+            "image": "mongo:2.4",
+            "volumes": [
+                "mongo_data:/data/db"
+            ],
+            "ports": [
+                "27018:27017"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_orientdb": {
+            "container_name": "loc_orient",
+            "image": "orientdb:2.0.18",
+            "environment": {
+                "ORIENTDB_ROOT_PASSWORD": "rootpwd"
+            },
+            "volumes": [
+                "/host/path/to/orientdb_data:/orientdb/databases",
+                "/host/path/to/orientdb_backup:/orientdb/backup"
+            ],
+            "ports": [
+                "2480:2480",
+                "2424:2424"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_php-fpm": {
+            "container_name": "loc_php",
+            "restart": always,
+            "image": "airtwister/php-fpm:5.5",
+            "volumes": [
+                "/host/path/to/html:/var/www/html",
+                "/host/path/to/php/php.ini:/usr/local/etc/php/php.ini:ro",
+                "/host/path/to/cron:/etc/cron.d/",
+                "./php/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro",
+                "./php/php-mail.conf:/usr/local/etc/php/conf.d/mail.ini:ro"
+            ],
+            "depends_on": [
+                "loc_postgres"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_nginx": {
+            "container_name": "loc_nginx",
+            "image": "nginx:1.8.1-alpine",
+            "volumes": [
+                "/host/path/to/html:/var/www/html",
+                "/host/path/to/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+            ],
+            "ports": [
+                "80:80"
+            ],
+            "depends_on": [
+                "loc_php-fpm"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_redis_db": {
+            "container_name": "loc_redis",
+            "image": "redis:3.0-alpine",
+            "volumes": [
+                "/host/path/to/redisdb_data:/data"
+            ],
+            "ports": [
+                "6379:6379"
+            ],
+            "networks": [
+                "loc"
+            ]
+        },
+        "loc_smtp": {
+            "container_name": "loc_smtp",
+            "image": "namshi/smtp",
+            "restart": "always",
+            "environment": {
+                "RELAY_NETWORKS": ":0.0.0.0/0",
+                "MAILNAME": "dhost.com"
+            },
+            "ports": [
+                "2525:25"
+            ],
+            "networks": [
+                "loc"
+            ]
+        }
+    }
+}
+

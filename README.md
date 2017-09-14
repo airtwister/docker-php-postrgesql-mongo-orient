@@ -1,2 +1,5 @@
 # docker-php-postrgesql-mongo-orient
-Docker compose file for web environment
+Docker compose files for web environment
+
+    5.5 - with orientdb
+    7.1 - without orientdb
