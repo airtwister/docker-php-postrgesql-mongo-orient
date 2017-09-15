@@ -82,21 +82,6 @@
             "networks": [
                 "loc"
             ]
-        },
-        "smtp": {
-            "container_name": "loc_smtp",
-            "image": "namshi/smtp",
-            "restart": "always",
-            "environment": {
-                "RELAY_NETWORKS": ":0.0.0.0/0",
-                "MAILNAME": "dhost.com"
-            },
-            "ports": [
-                "25:25"
-            ],
-            "networks": [
-                "loc"
-            ]    
         }
     }
 }
